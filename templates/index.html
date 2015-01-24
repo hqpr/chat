@@ -1,49 +1,50 @@
 <!doctype html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Tornado Chat</title>
-        <link rel="stylesheet" href="/static/css/bootstrap.min.css">
-        <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css">
-        <link rel="stylesheet" href="/static/css/style.css">
+<head>
+    <meta charset="utf-8">
+    <title>Tornado Chat</title>
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/static/css/style.css">
 
-        <script src="/static/js/jquery.js"></script>
-        <script src="/static/js/underscore.js"></script>
-        <script src="/static/js/backbone.js"></script>
-        <script src="/static/js/backbone.localStorage.js"></script>
-        <script src="/static/js/bootstrap.min.js"></script>
-        <script src="/static/js/main.js"></script>
-    </head>
-    <body>
-        <div id="backbone-chat" class="container">
-            <h1>Tornado Chat</h1>
-            <div id="chat-messages" class="chat-messages well">
-                {% for message in messages %}
-                <div class="message">
-                    <address>{{ message['user'] }}</address><span>{{ message['text'] }}</span>
-                </div>
-                {% end %}
-            </div>
-            <form name="chat-form form-inline" id="chat-form" action="." method="get">
-                <div class="input-prepend">
-                    <div class="add-on">
-                        <i class="icon-user"></i>
-                    </div>
-                    <input type="text" name="user" id="id_user" autocomplete="off" placeholder="Your name" autofocus>
-                </div>
-                <div class="input-prepend input-append">
-                    <div class="add-on">
-                        <i class="icon-envelope"></i>
-                    </div>
-                    <input class="input-large" type="text" name="text" id="id_text" placeholder="Enter your message here..." autocomplete="off">
-                    <button class="btn btn-primary" type="submit">Send</button>
-                </div>
-            </form>
+    <script src="/static/js/jquery.js"></script>
+    <script src="/static/js/underscore.js"></script>
+    <script src="/static/js/backbone.js"></script>
+    <script src="/static/js/backbone.localStorage.js"></script>
+    <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/main.js"></script>
+</head>
+<body>
+
+<div id="backbone-chat" class="container">
+    <h1>Tornado Chat</h1>
+    <div id="chat-messages" class="chat-messages well">
+        {% for message in messages %}
+        <div class="message">
+            <address>{{ message['user'] }}</address><span>{{ message['text'] }}</span>
         </div>
-        <!-- Templates -->
-        <script type="text/template" id="message-template">
-            <address><%- user %></address><span><%- text %></span>
-        </script>
-        <!-- /Templates -->
-    </body>
+        {% end %}
+    </div>
+    <form name="chat-form form-inline" id="chat-form" action="." method="get">
+        <div class="input-prepend">
+            <div class="add-on">
+                <i class="icon-user"></i>
+            </div>
+            <input type="text" name="user" id="id_user" autocomplete="off" placeholder="Your name" autofocus>
+        </div>
+        <div class="input-prepend input-append">
+            <div class="add-on">
+                <i class="icon-envelope"></i>
+            </div>
+            <input class="input-large" type="text" name="text" id="id_text" placeholder="Enter your message here..." autocomplete="off">
+            <button class="btn btn-primary" type="submit">Send</button>
+        </div>
+    </form>
+</div>
+<!-- Templates -->
+<script type="text/template" id="message-template">
+    <address><%- user %></address><span><%- text %></span>
+</script>
+<!-- /Templates -->
+</body>
 </html>
