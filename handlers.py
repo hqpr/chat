@@ -14,14 +14,38 @@ client = MongoClient()
 db = client.chat
 users = db.users
 
-class MainHandler(tornado.web.RequestHandler):
+
+class BaseHandler(tornado.web.RequestHandler):
+    def get_login_url(self):
+        return u"/login"
+
+    def get_current_user(self):
+        user_json = self.get_secure_cookie("user")
+        if user_json:
+            return tornado.escape.json_decode(user_json)
+        else:
+            return None
+
+    # Allows us to get the previous URL
+    def get_referring_url(self):
+        try:
+            _, _, referer, _, _, _ = urlparse.urlparse(self.request.headers.get('Referer'))
+            if referer:
+                return referer
+        # Test code will throw this if there was no 'previous' page
+        except AttributeError:
+            pass
+        return '/'
+
+
+class MainHandler(BaseHandler):
     def get(self):
         db = self.application.db
         messages = db.chat.find()
 
-        # if not self.current_user:
-        #     self.redirect("/login")
-        #     return
+        if not self.current_user:
+            self.redirect("/login")
+            return
         self.render('index.html', messages=messages)
 
 
@@ -52,36 +76,6 @@ class WebSocket(tornado.websocket.WebSocketHandler):
 #         else:
 #             return None
 
-class BaseHandler(tornado.web.RequestHandler):
-    def get_login_url(self):
-        return u"/login"
-
-    def get_current_user(self):
-        user_json = self.get_secure_cookie("user")
-        if user_json:
-            return tornado.escape.json_decode(user_json)
-        else:
-            return None
-
-    # Allows us to get the previous URL
-    def get_referring_url(self):
-        try:
-            _, _, referer, _, _, _ = urlparse.urlparse(self.request.headers.get('Referer'))
-            if referer:
-                return referer
-        # Test code will throw this if there was no 'previous' page
-        except AttributeError:
-            pass
-        return '/'
-
-    def get_flash(self):
-        flash = self.get_secure_cookie('flash')
-        self.clear_cookie('flash')
-        return flash
-
-    def get_essentials(self):
-        mp = {k: ''.join(v) for k, v in self.request.arguments.iteritems()}
-        print mp
 
 
 
@@ -95,14 +89,14 @@ class RegisterHandler(BaseHandler):
         password = self.get_argument("password", "")
 
         if username and password:
-            user = {'id': uuid.uuid4(), 'username': username, 'password': password, 'email': 'adubnyak@gmail.com', 'm': 1}
+            user = {'id': uuid.uuid4(), 'username': username, 'password': password, 'email': 'adubnyak@gmail.com'}
             users.insert(user)
             self.redirect('/')
 
 
 class LoginHandler(BaseHandler):
     def get(self):
-        self.render("login.html", notification=self.get_flash())
+        self.render("login.html")
 
     def post(self):
         username = self.get_argument("username", "")
@@ -123,3 +117,9 @@ class LoginHandler(BaseHandler):
             self.set_secure_cookie("user", tornado.escape.json_encode(user))
         else:
             self.clear_cookie("user")
+
+
+class LogoutHandler(BaseHandler):
+    def get(self, *args, **kwargs):
+        self.clear_cookie("user")
+        self.redirect('/')

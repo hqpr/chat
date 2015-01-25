@@ -33,6 +33,7 @@ class Application(tornado.web.Application):
             (r'/', MainHandler),
             (r'/register', RegisterHandler),
             (r'/login', LoginHandler),
+            (r'/logout', LogoutHandler),
             (r'/websocket/?', WebSocket),
             (r'/static/(.*)', tornado.web.StaticFileHandler,
              {'path': 'static/'}),

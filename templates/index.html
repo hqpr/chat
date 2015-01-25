@@ -18,6 +18,7 @@
 
 <div id="backbone-chat" class="container">
     <h1>Tornado Chat</h1>
+    <p><a href="/logout">LogoutHandler</a></p>
     <div id="chat-messages" class="chat-messages well">
         {% for message in messages %}
         <div class="message">
@@ -25,6 +26,8 @@
         </div>
         {% end %}
     </div>
+    {{ current_user }}
+
     <form name="chat-form form-inline" id="chat-form" action="." method="get">
         <div class="input-prepend">
             <div class="add-on">
