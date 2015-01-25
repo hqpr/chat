@@ -26,8 +26,8 @@ class Application(tornado.web.Application):
             cookie_secret=base64.b64encode(uuid.uuid4().bytes + uuid.uuid4().bytes),
             login_url='/login'
         )
-        connection = pymongo.Connection('127.0.0.1', 27017)
-        self.db = connection.chat
+        # connection = pymongo.Connection('127.0.0.1', 27017)
+        # self.db = connection.chat
         handlers = (
             (r'/', MainHandler),
             (r'/channel/(.*)', MainHandler),
