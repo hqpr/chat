@@ -1,8 +1,7 @@
 import urlparse
 import uuid
-
-import os
 import json
+from bson import ObjectId
 
 import tornado.web
 import tornado.ioloop
@@ -12,7 +11,10 @@ from pymongo import MongoClient
 
 client = MongoClient()
 db = client.chat
+
 users = db.users
+channels = db.channels
+messages = db.messages
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -39,27 +41,62 @@ class BaseHandler(tornado.web.RequestHandler):
 
 
 class MainHandler(BaseHandler):
-    def get(self):
-        db = self.application.db
-        messages = db.chat.find()
+    def get(self, channel=None, *args, **kwargs):
 
         if not self.current_user:
             self.redirect("/login")
             return
-        self.render('index.html', messages=messages)
 
+        # Create first channel
+        if not channels.find().count():
+            channels.insert(dict(name='Default'))
+
+        context = {
+            'channels': channels.find(),
+            'current_channel': None
+        }
+
+        if channel:
+            channel = channels.find_one({'_id': ObjectId(channel)}) or None
+            if channel:
+                context['current_channel'] = channel['_id']
+
+        if not channel:
+            context['current_channel'] = context['channels'][0]['_id']
+
+        context['channel_messages'] = messages.find({'channel': context['current_channel']})
+        self.render('index.html', **context)
 
 
 class WebSocket(tornado.websocket.WebSocketHandler):
-    def open(self):
+    channel_id = None
+    cuurent_user = None
+
+    def open(self, *args, **kwargs):
+        self.channel_id = args[0]
+        self.current_user = self.get_secure_cookie("user")
         self.application.webSocketsPool.append(self)
 
     def on_message(self, message):
-        db = self.application.db
         message_dict = json.loads(message)
-        db.chat.insert(message_dict)
+
+        if not self.current_user:
+            print('Error! Unauthorized')
+            return
+
+        if not channels.find_one({'_id': ObjectId(message_dict['channel'])}):
+            print('Error! Wrong channel')
+            return
+
+        message_dict.update({
+            'user': self.current_user,
+            'channel': ObjectId(message_dict['channel'])
+        })
+        messages.insert(message_dict)
+
+        # Sent message to other users
         for key, value in enumerate(self.application.webSocketsPool):
-            if value != self:
+            if value != self and value.channel_id == self.channel_id:
                 value.ws_connection.write_message(message)
 
     def on_close(self, message=None):
@@ -68,25 +105,14 @@ class WebSocket(tornado.websocket.WebSocketHandler):
                 del self.application.webSocketsPool[key]
 
 
-# class BaseHandler(tornado.web.RequestHandler):
-#     def get_current_user(self):
-#         user_json = self.get_secure_cookie("user")
-#         if user_json:
-#             return user_json
-#         else:
-#             return None
-
-
-
-
 # @tornado.web.authenticated
 class RegisterHandler(BaseHandler):
     def get(self):
         self.render("registration.html")
 
     def post(self):
-        username = self.get_argument("username", "")
-        password = self.get_argument("password", "")
+        username = self.get_argument("username", None)
+        password = self.get_argument("password", None)
 
         if username and password:
             user = {'id': uuid.uuid4(), 'username': username, 'password': password, 'email': 'adubnyak@gmail.com'}
@@ -99,8 +125,8 @@ class LoginHandler(BaseHandler):
         self.render("login.html")
 
     def post(self):
-        username = self.get_argument("username", "")
-        password = self.get_argument("password", "")
+        username = self.get_argument("username", None)
+        password = self.get_argument("password", None)
 
         user = users.find_one({'username': username})
 
@@ -112,7 +138,7 @@ class LoginHandler(BaseHandler):
             self.redirect(u"/register")
 
     def set_current_user(self, user):
-        print "setting " + user
+        print "Welcome " + user
         if user:
             self.set_secure_cookie("user", tornado.escape.json_encode(user))
         else:
@@ -123,3 +149,12 @@ class LogoutHandler(BaseHandler):
     def get(self, *args, **kwargs):
         self.clear_cookie("user")
         self.redirect('/')
+
+
+class CreateChannelHandler(BaseHandler):
+    def post(self, *args, **kwargs):
+        channel_name = self.get_argument("channel_name", None)
+        if channel_name:
+            if not channels.find_one({"name": channel_name}):
+                channels.insert(dict(name=channel_name))
+        self.redirect("/")

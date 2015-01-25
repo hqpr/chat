@@ -3,7 +3,8 @@ $(function () {
     var Socket = {
         ws: null,
         init: function () {
-            ws = new WebSocket('ws://' + document.location.host + '/websocket');
+            var channel_id = $('#id_channel').val();
+            ws = new WebSocket('ws://' + document.location.host + '/websocket/' + channel_id);
             ws.onopen = function () {
                 console.log('Socket opened');
             };
@@ -27,7 +28,7 @@ $(function () {
         defaults: function () {
             return {
                 user: null,
-                text: null,
+                text: null
             };
         },
         save: function (options) {
@@ -37,7 +38,7 @@ $(function () {
 
     var MessageList = Backbone.Collection.extend({
 
-        model: Message,
+        model: Message
 
     });
 
@@ -77,6 +78,7 @@ $(function () {
             }
             this.textInput = this.$('#id_text');
             this.userInput = this.$('#id_user');
+            this.channelInput = this.$('#id_channel');
 
             this.listenTo(Messages, 'add', this.addOne);
             this.listenTo(Messages, 'reset', this.addAll);
@@ -101,11 +103,7 @@ $(function () {
             this.userInput.removeClass('error');
             this.textInput.removeClass('error');
 
-            if (!this.userInput.val().trim()) {
-                this.userInput.addClass('error');
-                this.userInput.focus();
-                return false;
-            }
+
             if (!this.textInput.val().trim()) {
                 this.textInput.addClass('error');
                 this.textInput.focus();
@@ -114,7 +112,8 @@ $(function () {
 
             Messages.create({
                 user: this.userInput.val(),
-                text: this.textInput.val()
+                text: this.textInput.val(),
+                channel: this.channelInput.val()
             });
 
             this.textInput.val('');

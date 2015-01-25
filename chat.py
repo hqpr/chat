@@ -5,15 +5,14 @@ http://tornado.readthedocs.org/en/latest/guide/security.html
 https://github.com/bootandy/tornado_sample/blob/master/sample/handlers/handlers.py
 """
 import base64
-
+import os
+import uuid
+import pymongo
 import tornado.web
 import tornado.ioloop
 import tornado.websocket
 
-from tornado import template
-from tornado.escape import linkify
-from handlers import *
-import pymongo
+from handlers import CreateChannelHandler, MainHandler, RegisterHandler, LoginHandler, LogoutHandler, WebSocket
 
 
 class Application(tornado.web.Application):
@@ -31,10 +30,12 @@ class Application(tornado.web.Application):
         self.db = connection.chat
         handlers = (
             (r'/', MainHandler),
+            (r'/channel/(.*)', MainHandler),
+            (r'/create_channel', CreateChannelHandler),
             (r'/register', RegisterHandler),
             (r'/login', LoginHandler),
             (r'/logout', LogoutHandler),
-            (r'/websocket/?', WebSocket),
+            (r'/websocket/(.*)?', WebSocket),
             (r'/static/(.*)', tornado.web.StaticFileHandler,
              {'path': 'static/'}),
         )
@@ -47,4 +48,3 @@ application = Application()
 if __name__ == '__main__':
     application.listen(8888)
     tornado.ioloop.IOLoop.instance().start()
-

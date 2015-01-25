@@ -24,3 +24,12 @@ input[type="text"] {
 .chat-messages address:after {
     content: ':';
 }
+
+.current_channel {
+    font-weight: bold;
+}
+
+#chat-rooms {
+    border: 1px solid #ccc;
+
+}
