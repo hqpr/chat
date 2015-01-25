@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{% block title %}{% end %}tornado chat</title>
+    <link href="{{ static_url('css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="{{ static_url('css/style.css') }}" rel="stylesheet">
+
+    <script src="{{ static_url('js/jquery-1.9.1.min.js') }}"></script>
+    <script src="{{ static_url('js/underscore.js') }}"></script>
+    <script src="{{ static_url('js/bootstrap.min.js') }}"></script>
+    <script src="{{ static_url('js/backbone.js') }}"></script>
+    <script src="{{ static_url('js/backbone.localStorage.js') }}"></script>
+</head>
+<body>
+{% block content %}{% end %}
+</body>
+</html>

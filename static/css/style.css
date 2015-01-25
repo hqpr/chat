@@ -29,7 +29,7 @@ input[type="text"] {
     font-weight: bold;
 }
 
-#chat-rooms {
-    border: 1px solid #ccc;
-
+#chat-rooms ul li{
+    display: block;
+    list-style: none;
 }

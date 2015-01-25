@@ -8,8 +8,12 @@ import tornado.ioloop
 import tornado.websocket
 
 from pymongo import MongoClient
+DEGUG = False
 
-client = MongoClient('mongodb://chat_user:123@ds031651.mongolab.com:31651/chat')
+if DEGUG:
+    client = MongoClient()
+else:
+    client = MongoClient('mongodb://chat_user:123@ds031651.mongolab.com:31651/chat')
 db = client.chat
 
 users = db.users
@@ -113,9 +117,10 @@ class RegisterHandler(BaseHandler):
     def post(self):
         username = self.get_argument("username", None)
         password = self.get_argument("password", None)
+        email = self.get_argument("email", None)
 
         if username and password:
-            user = {'id': uuid.uuid4(), 'username': username, 'password': password, 'email': 'adubnyak@gmail.com'}
+            user = {'id': uuid.uuid4(), 'username': username, 'password': password, 'email': email}
             users.insert(user)
             self.redirect('/')
 
