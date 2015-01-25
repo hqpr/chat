@@ -46,5 +46,6 @@ application = Application()
 
 
 if __name__ == '__main__':
-    application.listen(8888)
+    port = int(os.environ.get("PORT", 5000))
+    application.listen(port)
     tornado.ioloop.IOLoop.instance().start()
