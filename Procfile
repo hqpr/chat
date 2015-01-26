@@ -1,1 +1,1 @@
-web: gunicorn chat
+web: python chat.py
