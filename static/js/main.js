@@ -5,9 +5,12 @@ $(function () {
         init: function () {
             var channel_id = $('#id_channel').val();
             ws = new ReconnectingWebSocket('ws://' + document.location.host + '/websocket/' + channel_id);
-            ws.onopen = function () {
-                console.log('Socket opened');
-            };
+            var ws_engine = window['MozWebSocket'] ? MozWebSocket : ReconnectingWebSocket;
+            ws = new ws_engine('ws://' + document.location.host + '/websocket/' + channel_id);
+
+            //ws.onopen = function () {
+            //    console.log('Socket opened');
+            //};
 
             ws.onclose = function () {
                 console.log('Socket close');
