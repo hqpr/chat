@@ -4,19 +4,19 @@ $(function () {
         ws: null,
         init: function () {
             var channel_id = $('#id_channel').val();
-            ws = new ReconnectingWebSocket('ws://' + document.location.host + '/websocket/' + channel_id);
-            //var ws_engine = window['MozWebSocket'] ? MozWebSocket : ReconnectingWebSocket;
-            //ws = new ws_engine('ws://' + document.location.host + '/websocket/' + channel_id);
+            ws = new ReconnectingWebSocket('wss://' + document.location.host + '/websocket/' + channel_id);
+            var ws_engine = window['MozWebSocket'] ? MozWebSocket : ReconnectingWebSocket;
+            ws = new ws_engine('wss://' + document.location.host + '/websocket/' + channel_id);
 
-            wss.onopen = function () {
-                console.log('Socket opened');
-            };
+            //ws.onopen = function () {
+            //    console.log('Socket opened');
+            //};
 
-            wss.onclose = function () {
+            ws.onclose = function () {
                 console.log('Socket close');
             };
 
-            wss.onmessage = function (e) {
+            ws.onmessage = function (e) {
                 var message = new Message(JSON.parse(e.data));
                 App.addOne(message);
             };
