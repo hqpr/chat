@@ -4,7 +4,7 @@ $(function () {
         ws: null,
         init: function () {
             var channel_id = $('#id_channel').val();
-            ws = new WebSocket('ws://' + document.location.host + '/websocket/' + channel_id);
+            ws = new ReconnectingWebSocket('ws://' + document.location.host + '/websocket/' + channel_id);
             ws.onopen = function () {
                 console.log('Socket opened');
             };
