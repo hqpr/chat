@@ -8,7 +8,7 @@ import tornado.ioloop
 import tornado.websocket
 
 from pymongo import MongoClient
-client = MongoClient('mongodb://chat_user:123@ds031651.mongolab.com:31651/chat')
+client = MongoClient('mongodb://chat_user:123@ds031651.mongolab.com:31651/chat2')
 
 # DEGUG = False
 #
