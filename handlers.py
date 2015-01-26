@@ -13,7 +13,7 @@ from pymongo import MongoClient
 # client = MongoClient('mongodb://alex:123@ds031571.mongolab.com:31571/chat2')
 # client = MongoClient('mongodb://alex_user:123@ds031571.mongolab.com:31571/tornado')
 
-DEGUG = True
+DEGUG = False
 
 if DEGUG:
     client = MongoClient()
