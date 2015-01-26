@@ -5,18 +5,18 @@ $(function () {
         init: function () {
             var channel_id = $('#id_channel').val();
             ws = new ReconnectingWebSocket('ws://' + document.location.host + '/websocket/' + channel_id);
-            var ws_engine = window['MozWebSocket'] ? MozWebSocket : ReconnectingWebSocket;
-            ws = new ws_engine('ws://' + document.location.host + '/websocket/' + channel_id);
+            //var ws_engine = window['MozWebSocket'] ? MozWebSocket : ReconnectingWebSocket;
+            //ws = new ws_engine('ws://' + document.location.host + '/websocket/' + channel_id);
 
-            //ws.onopen = function () {
-            //    console.log('Socket opened');
-            //};
+            wss.onopen = function () {
+                console.log('Socket opened');
+            };
 
-            ws.onclose = function () {
+            wss.onclose = function () {
                 console.log('Socket close');
             };
 
-            ws.onmessage = function (e) {
+            wss.onmessage = function (e) {
                 var message = new Message(JSON.parse(e.data));
                 App.addOne(message);
             };
